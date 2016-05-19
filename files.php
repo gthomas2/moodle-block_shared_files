@@ -23,7 +23,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require('../config.php');
+require('../../config.php');
 require_once("$CFG->dirroot/blocks/shared_files/files_form.php");
 require_once("$CFG->dirroot/repository/lib.php");
 
@@ -38,7 +38,7 @@ if (empty($returnurl)) {
     $returnurl = new moodle_url('/shared/files.php');
 }
 
-$context = context_user::instance($USER->id);
+$context = context_system::instance();
 require_capability('moodle/user:manageownfiles', $context);
 
 $title = get_string('privatefiles');
@@ -72,7 +72,7 @@ $generator->set_data(-1);
 $data->emaillink = $generator->generate($USER->id);
 */
 
-$mform = new user_files_form(null, array('data' => $data, 'options' => $options));
+$mform = new shared_files_form(null, array('data' => $data, 'options' => $options));
 
 if ($mform->is_cancelled()) {
     redirect($returnurl);
