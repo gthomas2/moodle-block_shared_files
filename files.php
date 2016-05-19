@@ -62,7 +62,7 @@ $data = new stdClass();
 $data->returnurl = $returnurl;
 $options = array('subdirs' => 1, 'maxbytes' => $maxbytes, 'maxfiles' => -1, 'accepted_types' => '*',
         'areamaxbytes' => $maxareabytes);
-file_prepare_standard_filemanager($data, 'files', $options, $context, 'user', 'shared', 0);
+file_prepare_standard_filemanager($data, 'files', $options, $context, 'block_shared_files', 'shared', 0);
 
 /*
 // Attempt to generate an inbound message address to support e-mail to private files.
@@ -77,7 +77,7 @@ $mform = new shared_files_form(null, array('data' => $data, 'options' => $option
 if ($mform->is_cancelled()) {
     redirect($returnurl);
 } else if ($formdata = $mform->get_data()) {
-    $formdata = file_postupdate_standard_filemanager($formdata, 'files', $options, $context, 'user', 'shared', 0);
+    $formdata = file_postupdate_standard_filemanager($formdata, 'files', $options, $context, 'block_shared_files', 'shared', 0);
     redirect($returnurl);
 }
 

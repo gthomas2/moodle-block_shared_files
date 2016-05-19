@@ -66,7 +66,7 @@ class block_shared_files_renderer extends plugin_renderer_base {
             $result .= '<li yuiConfig=\''.json_encode($yuiconfig).'\'><div>'.$image.s($subdir['dirname']).'</div> '.$this->htmllize_tree($tree, $subdir).'</li>';
         }
         foreach ($dir['files'] as $file) {
-            $url = file_encode_url("$CFG->wwwroot/pluginfile.php", '/'.$tree->context->id.'/shared'.$file->get_filepath().$file->get_filename(), true);
+            $url = file_encode_url("$CFG->wwwroot/pluginfile.php", '/1/block_shared_files/shared'.$file->get_filepath().$file->get_filename(), true);
             $filename = $file->get_filename();
             $image = $this->output->pix_icon(file_file_icon($file), $filename, 'moodle', array('class'=>'icon'));
             $result .= '<li yuiConfig=\''.json_encode($yuiconfig).'\'><div>'.html_writer::link($url, $image.$filename).'</div></li>';
@@ -84,6 +84,6 @@ class shared_files_tree implements renderable {
         global $USER;
         $this->context = context_user::instance($USER->id);
         $fs = get_file_storage();
-        $this->dir = $fs->get_area_tree(context_system::instance()->id, 'user', 'shared', 0);
+        $this->dir = $fs->get_area_tree(context_system::instance()->id, 'block_shared_files', 'shared', 0);
     }
 }
