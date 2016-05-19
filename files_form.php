@@ -48,7 +48,7 @@ class shared_files_form extends moodleform {
         /*
         if (isset($data->emaillink)) {
             $emaillink = html_writer::link(new moodle_url('mailto:' . $data->emaillink), $data->emaillink);
-            $mform->addElement('static', 'emailaddress', '',
+            $mform->addElement($context'static', 'emailaddress', '',
                 get_string('emailtoprivatefiles', 'moodle', $emaillink));
         }
         */
