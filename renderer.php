@@ -84,6 +84,6 @@ class shared_files_tree implements renderable {
         global $USER;
         $this->context = context_user::instance($USER->id);
         $fs = get_file_storage();
-        $this->dir = $fs->get_area_tree($this->context->id, 'user', 'shared', 0);
+        $this->dir = $fs->get_area_tree(context_system::instance()->id, 'user', 'shared', 0);
     }
 }
