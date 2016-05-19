@@ -62,7 +62,7 @@ class block_shared_files extends block_base {
             $this->content->text = $renderer->shared_files_tree();
             if (has_capability('moodle/user:manageownfiles', $this->context)) {
                 $this->content->footer = html_writer::link(
-                    new moodle_url('/user/files.php', array('returnurl' => $PAGE->url->out())),
+                    new moodle_url('/shared/files.php', array('returnurl' => $PAGE->url->out())),
                     get_string('sharedfilesmanage', 'block_shared_files') . '...');
             }
 

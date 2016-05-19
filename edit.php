@@ -26,4 +26,4 @@
 
 require('../../config.php');
 
-redirect(new moodle_url('/user/files.php'));
+redirect(new moodle_url('/shared/files.php'));
