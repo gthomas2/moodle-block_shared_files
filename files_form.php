@@ -42,18 +42,21 @@ class shared_files_form extends moodleform {
 
         $data = $this->_customdata['data'];
         $options = $this->_customdata['options'];
-        
+
         $mform->addElement('filemanager', 'files_filemanager', get_string('files'), null, $options);
         $mform->addElement('hidden', 'returnurl', $data->returnurl);
+        $mform->setType('returnurl', PARAM_LOCALURL);
+        $mform->addElement('hidden', 'areaid', $data->areaid);
+        $mform->setType('areaid', PARAM_INT);
         /*
         if (isset($data->emaillink)) {
             $emaillink = html_writer::link(new moodle_url('mailto:' . $data->emaillink), $data->emaillink);
             $mform->addElement($context'static', 'emailaddress', '',
                 get_string('emailtoprivatefiles', 'moodle', $emaillink));
-        }
+        }xo
         */
-        
-        $mform->setType('returnurl', PARAM_LOCALURL);
+
+
 
         $this->add_action_buttons(true, get_string('savechanges'));
 

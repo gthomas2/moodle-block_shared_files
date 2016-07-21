@@ -33,6 +33,7 @@ if (isguestuser()) {
 }
 
 $returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
+$areaid = optional_param('areaid', '', PARAM_INT);
 
 if (empty($returnurl)) {
     $returnurl = new moodle_url('/shared/files.php');
@@ -60,9 +61,10 @@ if (has_capability('moodle/user:ignoreuserquota', $context)) {
 
 $data = new stdClass();
 $data->returnurl = $returnurl;
+$data->areaid = $areaid;
 $options = array('subdirs' => 1, 'maxbytes' => $maxbytes, 'maxfiles' => -1, 'accepted_types' => '*',
         'areamaxbytes' => $maxareabytes);
-file_prepare_standard_filemanager($data, 'files', $options, $context, 'block_shared_files', 'shared', 0);
+file_prepare_standard_filemanager($data, 'files', $options, $context, 'block_shared_files', 'shared' . $areaid, 0);
 
 /*
 // Attempt to generate an inbound message address to support e-mail to private files.
@@ -77,7 +79,8 @@ $mform = new shared_files_form(null, array('data' => $data, 'options' => $option
 if ($mform->is_cancelled()) {
     redirect($returnurl);
 } else if ($formdata = $mform->get_data()) {
-    $formdata = file_postupdate_standard_filemanager($formdata, 'files', $options, $context, 'block_shared_files', 'shared', 0);
+
+    $formdata = file_postupdate_standard_filemanager($formdata, 'files', $options, $context, 'block_shared_files', 'shared' . $formdata->areaid, 0);
     redirect($returnurl);
 }
 

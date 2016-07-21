@@ -35,15 +35,27 @@ class block_shared_files_renderer extends plugin_renderer_base {
     }
 
     public function render_shared_files_tree(shared_files_tree $tree) {
+        global $PAGE;
         $module = array('name'=>'block_shared_files', 'fullpath'=>'/blocks/shared_files/module.js', 'requires'=>array('yui2-treeview'));
-        if (empty($tree->dir['subdirs']) && empty($tree->dir['files'])) {
-            $html = $this->output->box(get_string('nofilesavailable', 'repository'));
-        } else {
-            $htmlid = 'shared_files_tree_'.uniqid();
-            $this->page->requires->js_init_call('M.block_shared_files.init_tree', array(false, $htmlid));
-            $html = '<div id="'.$htmlid.'">';
-            $html .= $this->htmllize_tree($tree, $tree->dir);
-            $html .= '</div>';
+        $html = '';
+        foreach($tree->areas as $id=> $areadata) {
+          $area = $areadata['tree'];
+          $name = $areadata['name'];
+          $html .= '<h3>' . $name . '</h3>';
+          if (empty($area['subdirs']) && empty($area['files'])) {
+              $html .= $this->output->box(get_string('nofilesavailable', 'repository'));
+          } else {
+              $htmlid = 'shared_files_tree_'.uniqid();
+              $this->page->requires->js_init_call('M.block_shared_files.init_tree', array(false, $htmlid));
+              $html .= '<div id="'.$htmlid.'">';
+              $html .= $this->htmllize_tree($area);
+
+              $html .= '</div>';
+          }
+          $html .= html_writer::link(
+            new moodle_url('/blocks/shared_files/files.php',
+                           array('returnurl' => $PAGE->url->out(), 'areaid' => $id)),
+            get_string('sharedfilesmanage', 'block_shared_files') . ' ' . $name);
         }
 
         return $html;
@@ -52,7 +64,7 @@ class block_shared_files_renderer extends plugin_renderer_base {
     /**
      * Internal function - creates htmls structure suitable for YUI tree.
      */
-    protected function htmllize_tree($tree, $dir) {
+    protected function htmllize_tree($dir) {
         global $CFG;
         $yuiconfig = array();
         $yuiconfig['type'] = 'html';
@@ -63,7 +75,7 @@ class block_shared_files_renderer extends plugin_renderer_base {
         $result = '<ul>';
         foreach ($dir['subdirs'] as $subdir) {
             $image = $this->output->pix_icon(file_folder_icon(), $subdir['dirname'], 'moodle', array('class'=>'icon'));
-            $result .= '<li yuiConfig=\''.json_encode($yuiconfig).'\'><div>'.$image.s($subdir['dirname']).'</div> '.$this->htmllize_tree($tree, $subdir).'</li>';
+            $result .= '<li yuiConfig=\''.json_encode($yuiconfig).'\'><div>'.$image.s($subdir['dirname']).'</div> '.$this->htmllize_tree($subdir).'</li>';
         }
         foreach ($dir['files'] as $file) {
             $url = file_encode_url("$CFG->wwwroot/pluginfile.php", '/1/block_shared_files/shared'.$file->get_filepath().$file->get_filename(), true);
@@ -81,9 +93,15 @@ class shared_files_tree implements renderable {
     public $context;
     public $dir;
     public function __construct() {
-        global $USER;
+        global $USER, $DB;
         $this->context = context_user::instance($USER->id);
         $fs = get_file_storage();
-        $this->dir = $fs->get_area_tree(context_system::instance()->id, 'block_shared_files', 'shared', 0);
+        $user_areas = $DB->get_records_sql('SELECT areas.name, areas.id, areas.global ' .
+          'FROM {shared_files_areas} as areas, {shared_files_usage} as usage ' .
+          'WHERE areas.id = usage.areaid AND usage.userid = ?', array($USER->id));
+        $this->areas = array();
+        foreach($user_areas as $area) {
+          $this->areas[$area->id] = array('name' => $area->name, 'tree' => $fs->get_area_tree(context_system::instance()->id, 'block_shared_files', 'shared' . $area->id, 0));
+        }
     }
 }

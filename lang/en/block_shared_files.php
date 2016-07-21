@@ -24,7 +24,6 @@
 
 $string['pluginname'] = 'Shared files';
 $string['sharedfiles'] = 'Shared files';
-$string['sharedfilesmanage'] = 'Manage shared files';
+$string['sharedfilesmanage'] = 'Manage shared files of';
 $string['shared_files:addinstance'] = 'Add a new shared files block';
 $string['shared_files:myaddinstance'] = 'Add a new shared files block to Dashboard';
-
