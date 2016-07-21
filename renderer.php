@@ -48,7 +48,7 @@ class block_shared_files_renderer extends plugin_renderer_base {
               $htmlid = 'shared_files_tree_'.uniqid();
               $this->page->requires->js_init_call('M.block_shared_files.init_tree', array(false, $htmlid));
               $html .= '<div id="'.$htmlid.'">';
-              $html .= $this->htmllize_tree($area);
+              $html .= $this->htmllize_tree($area, $id);
 
               $html .= '</div>';
           }
@@ -64,7 +64,7 @@ class block_shared_files_renderer extends plugin_renderer_base {
     /**
      * Internal function - creates htmls structure suitable for YUI tree.
      */
-    protected function htmllize_tree($dir) {
+    protected function htmllize_tree($dir, $areaid) {
         global $CFG;
         $yuiconfig = array();
         $yuiconfig['type'] = 'html';
@@ -75,10 +75,10 @@ class block_shared_files_renderer extends plugin_renderer_base {
         $result = '<ul>';
         foreach ($dir['subdirs'] as $subdir) {
             $image = $this->output->pix_icon(file_folder_icon(), $subdir['dirname'], 'moodle', array('class'=>'icon'));
-            $result .= '<li yuiConfig=\''.json_encode($yuiconfig).'\'><div>'.$image.s($subdir['dirname']).'</div> '.$this->htmllize_tree($subdir).'</li>';
+            $result .= '<li yuiConfig=\''.json_encode($yuiconfig).'\'><div>'.$image.s($subdir['dirname']).'</div> '.$this->htmllize_tree($subdir, $areaid).'</li>';
         }
         foreach ($dir['files'] as $file) {
-            $url = file_encode_url("$CFG->wwwroot/pluginfile.php", '/1/block_shared_files/shared'.$file->get_filepath().$file->get_filename(), true);
+            $url = file_encode_url("$CFG->wwwroot/pluginfile.php", '/1/block_shared_files/shared'.$areaid.$file->get_filepath().$file->get_filename(), true);
             $filename = $file->get_filename();
             $image = $this->output->pix_icon(file_file_icon($file), $filename, 'moodle', array('class'=>'icon'));
             $result .= '<li yuiConfig=\''.json_encode($yuiconfig).'\'><div>'.html_writer::link($url, $image.$filename).'</div></li>';
