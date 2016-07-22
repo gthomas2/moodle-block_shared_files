@@ -19,6 +19,7 @@
       <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
       <FIELD NAME="areaid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
       <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+      <FIELD NAME="owner" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" DEFAULT="0" />
     </FIELDS>
     <KEYS>
       <KEY NAME="primary" TYPE="primary" FIELDS="id" />

@@ -24,69 +24,51 @@
  */
 
 require('../../config.php');
-require_once("$CFG->dirroot/blocks/shared_files/files_form.php");
-require_once("$CFG->dirroot/repository/lib.php");
+require_once("$CFG->dirroot/blocks/shared_files/add_area_form.php");
+// require_once("$CFG->dirroot/repository/lib.php");
 
 require_login();
 if (isguestuser()) {
     die();
 }
 
-$returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
-$areaid = optional_param('areaid', '', PARAM_INT);
-
-if (empty($returnurl)) {
-    $returnurl = new moodle_url('/shared/files.php');
-}
-
 $context = context_system::instance();
 require_capability('moodle/user:manageownfiles', $context);
+$returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
 
-$title = get_string('sharedfiles', 'block_shared_files');
+$title = get_string('sharedfiles', 'block_shared_files');  // TODO: change title
 $struser = get_string('user');
 
-$PAGE->set_url('/blocks/shared_files/files.php');
+$PAGE->set_url('/blocks/shared_files/addarea.php');
 $PAGE->set_context($context);
 $PAGE->set_title($title);
 $PAGE->set_heading(fullname($USER));
 $PAGE->set_pagelayout('mydashboard');
 $PAGE->set_pagetype('shared-files');
 
-$maxbytes = $CFG->userquota;
-$maxareabytes = $CFG->userquota;
-if (has_capability('moodle/user:ignoreuserquota', $context)) {
-    $maxbytes = USER_CAN_IGNORE_FILE_SIZE_LIMITS;
-    $maxareabytes = FILE_AREA_MAX_BYTES_UNLIMITED;
-}
-
 $data = new stdClass();
 $data->returnurl = $returnurl;
-$data->areaid = $areaid;
-$options = array('subdirs' => 1, 'maxbytes' => $maxbytes, 'maxfiles' => -1, 'accepted_types' => '*',
-        'areamaxbytes' => $maxareabytes);
-file_prepare_standard_filemanager($data, 'files', $options, $context, 'block_shared_files', 'shared' . $areaid, 0);
 
-/*
-// Attempt to generate an inbound message address to support e-mail to private files.
-$generator = new \core\message\inbound\address_manager();
-$generator->set_handler('\core\message\inbound\private_files_handler');
-$generator->set_data(-1);
-$data->emaillink = $generator->generate($USER->id);
-*/
-
-$mform = new shared_files_form(null, array('data' => $data, 'options' => $options));
+$mform = new shared_files_addarea_form(null, array('data' => $data));
 
 if ($mform->is_cancelled()) {
     redirect($returnurl);
-} else if ($formdata = $mform->get_data()) {
-
-    $formdata = file_postupdate_standard_filemanager($formdata, 'files', $options, $context, 'block_shared_files', 'shared' . $formdata->areaid, 0);
+} else if ($formdata = $mform->get_data()){
+    global $DB, $USER;
+    $new_area_name = $formdata->areaname;
+    $area_record = new stdClass();
+    $area_record->name = $new_area_name;
+    $area_record->global = 0;
+    $area_id = $DB->insert_record('shared_files_areas', $area_record);
+    $owner_record = new stdClass();
+    $owner_record->areaid = $area_id;
+    $owner_record->userid = $USER->id;
+    $DB->insert_record('shared_files_usage', $owner_record);
     redirect($returnurl);
 }
 
 echo $OUTPUT->header();
 echo $OUTPUT->box_start('generalbox');
-
 
 $mform->display();
 echo $OUTPUT->box_end();

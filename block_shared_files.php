@@ -60,6 +60,10 @@ class block_shared_files extends block_base {
 
             $renderer = $this->page->get_renderer('block_shared_files');
             $this->content->text = $renderer->shared_files_tree();
+            $this->content->footer = html_writer::link(
+                new moodle_url('/blocks/shared_files/add_area.php',
+                               array('returnurl' => $PAGE->url->out())),
+                get_string('addarea', 'block_shared_files'));
             if (has_capability('moodle/user:manageownfiles', $this->context)) {
               // blub
             }
